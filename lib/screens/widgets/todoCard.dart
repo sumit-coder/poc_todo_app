@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:poc_demo_app/models/task.dart';
 
 class TodoCard extends StatelessWidget {
-  const TodoCard(
-      {Key? key,
-      required this.todoData,
-      required this.onCeckboxClicked,
-      required this.onTodoDelete})
-      : super(key: key);
+  const TodoCard({
+    Key? key,
+    required this.todoData,
+    required this.onCeckboxClicked,
+    required this.onTodoDelete,
+    required this.onTodoLongPress,
+  }) : super(key: key);
 
   final Task todoData;
   final Function onCeckboxClicked;
   final VoidCallback onTodoDelete;
+  final VoidCallback onTodoLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -78,66 +80,69 @@ class TodoCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         elevation: 2,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Check box And Delete Button Section
-            Container(
-              child: Column(
-                children: [
-                  Checkbox(
-                    value: todoData.isCompleted,
-                    activeColor: const Color.fromARGB(255, 82, 177, 255),
-                    onChanged: (bool) {
-                      onCeckboxClicked();
-                    },
-                  ),
-                  todoData.isCompleted == true
-                      ? IconButton(
-                          onPressed: onTodoDelete,
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Color.fromARGB(255, 255, 111, 101),
-                          ),
-                        )
-                      : Container(),
-                ],
-              ),
-            ),
-            // Todo Title Date etc Section
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(left: 5, top: 10, right: 5),
-                child: Stack(
+        child: InkWell(
+          onLongPress: onTodoLongPress,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Check box And Delete Button Section
+              Container(
+                child: Column(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          todoData.task, // Task Text
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: const TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          getRightDateFormate(), // Due Date of Task
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ],
+                    Checkbox(
+                      value: todoData.isCompleted,
+                      activeColor: const Color.fromARGB(255, 82, 177, 255),
+                      onChanged: (bool) {
+                        onCeckboxClicked();
+                      },
                     ),
-                    getTodoDueDatePriorityContainer(), // this give Low Hige Small card
+                    todoData.isCompleted == true
+                        ? IconButton(
+                            onPressed: onTodoDelete,
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Color.fromARGB(255, 255, 111, 101),
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ),
-            ),
-          ],
+              // Todo Title Date etc Section
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.only(left: 5, top: 10, right: 5),
+                  child: Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            todoData.task, // Task Text
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            getRightDateFormate(), // Due Date of Task
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      getTodoDueDatePriorityContainer(), // this give Low Hige Small card
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

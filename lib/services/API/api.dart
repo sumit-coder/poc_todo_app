@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:poc_demo_app/models/links.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,8 +30,39 @@ class ApiService {
     }
   }
 
+  Future<Map?> getTodosOfNextPage(int pageNo) async {
+    if (pageNo >= 2) {
+      // only runs if target page no is 2 More then 2
+      dynamic pageData = await getTodoPageData(pageNo);
+
+      if (pageData != null) {
+        // converting task list and page Link to json
+        var jsonDataLinks = jsonEncode(pageData['links']);
+        var jsonDataTasks = jsonEncode(pageData['data']);
+        // converting json task list and page Links For StateManagement
+        Links pageLinkFromAPI = linksFromJson(jsonDataLinks);
+        List<Task> listOfTaskFromAPI = taskFromJson(jsonDataTasks);
+
+        return {
+          'tasks': listOfTaskFromAPI,
+          'links': pageLinkFromAPI,
+        };
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   dynamic getTodoPageData(int pageNumber) async {
-    Uri url = Uri.parse('$baseUrl/todos');
+    Uri url;
+    if (pageNumber >= 2) {
+      // only called when Request for Second And more Page Data Needed
+      url = Uri.parse('$baseUrl/todos?page=$pageNumber');
+    } else {
+      url = Uri.parse('$baseUrl/todos');
+    }
     try {
       //
       http.Response response = await http.get(url);

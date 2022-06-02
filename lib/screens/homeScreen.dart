@@ -4,6 +4,9 @@ import 'package:poc_demo_app/providers/home_Screen_Provider.dart';
 import 'package:poc_demo_app/services/API/api.dart';
 import 'package:provider/provider.dart';
 
+import '../models/links.dart';
+import 'addTodoScreen.dart';
+import 'widgets/snackBars.dart';
 import 'widgets/todoCard.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -33,39 +36,89 @@ class HomeScreen extends StatelessWidget {
               Consumer<HomeScreenProvider>(
                 builder: (context, provider, child) {
                   // this Will Called only one Time for getting Todos Form API
-                  if (provider.tasksLodedeFromApi == false) {
-                    provider.getTasks(0);
+                  if (provider.tasksLodedeFromApi == false &&
+                      provider.retryButtonNeed == false) {
+                    provider.getTasks();
                   }
                   if (provider.tasksLodedeFromApi == false) {
-                    // This Will return Loading Incicator while data if loading form API
-                    return const Center(child: CircularProgressIndicator());
+                    // This Will return Loading Incicator or Retry Button while data if loading form API
+
+                    if (provider.retryButtonNeed == true) {
+                      // this will return ReTry Button if no there is no Internet
+                      return Center(
+                        child: Material(
+                          elevation: 2,
+                          child: IconButton(
+                            onPressed: () {
+                              // this will retry to get Data Form API and Show Message for it
+                              provider.getTasks().then(
+                                // after re-calling getTask show SnackBar (NoInternet)
+                                (value) {
+                                  if (value == false) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(noInternetSnackBar);
+                                  }
+                                },
+                              );
+                            },
+                            icon: Icon(
+                              Icons.replay_rounded,
+                              color: Colors.grey.shade800,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      // This Will Return Progress Indicator
+                      return const Center(child: CircularProgressIndicator());
+                    }
                   } else {
                     // This Will return when data is loaded form API
                     return Expanded(
-                      child: ListView.builder(
-                        itemCount: provider.taskList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          // Get Current from List of Task
-                          Task currentTask = provider.taskList[index];
-
-                          return TodoCard(
-                            onCeckboxClicked: () {
-                              provider.isCompletedTodo(currentTask.id);
-                            },
-                            onTodoDelete: () {
-                              provider.deleteTask(currentTask.id);
-                            },
-                            todoData: Task(
-                              id: currentTask.id,
-                              task: currentTask.task,
-                              isCompleted: currentTask.isCompleted,
-                              dueDate: currentTask.dueDate,
-                              userId: currentTask.userId,
-                              createdAt: currentTask.createdAt,
-                              updatedAt: currentTask.updatedAt,
-                            ),
-                          );
+                      child: NotificationListener<ScrollEndNotification>(
+                        onNotification: (ScrollNotification notification) {
+                          if (notification.metrics.atEdge) {
+                            if (notification.metrics.pixels == 0) {
+                              // print('At top');
+                            } else {
+                              // print('At bottom');
+                              // This Will New Todo When user Scroll to end
+                              Provider.of<HomeScreenProvider>(context,
+                                      listen: false)
+                                  .lazyLoadingLoadTodos();
+                            }
+                          }
+                          return true;
                         },
+                        child: ListView.builder(
+                          itemCount: provider.taskList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            // Get Current from List of Task
+                            Task currentTask = provider.taskList[index];
+
+                            return TodoCard(
+                              onCeckboxClicked: () {
+                                provider.isCompletedTodo(currentTask.id);
+                              },
+                              onTodoDelete: () {
+                                provider.deleteTask(currentTask.id);
+                              },
+                              onTodoLongPress: () {
+                                print('Edit ToDo');
+                              },
+                              todoData: Task(
+                                id: currentTask.id,
+                                task: currentTask.task,
+                                isCompleted: currentTask.isCompleted,
+                                dueDate: currentTask.dueDate,
+                                userId: currentTask.userId,
+                                createdAt: currentTask.createdAt,
+                                updatedAt: currentTask.updatedAt,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     );
                   }
@@ -77,7 +130,13 @@ class HomeScreen extends StatelessWidget {
                 width: double.maxFinite,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () async {},
+                  onPressed: () async {
+                    // print(d!['tasks'][0].);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddTodoScreen()),
+                    );
+                  },
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(1),
                   ),
@@ -89,7 +148,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

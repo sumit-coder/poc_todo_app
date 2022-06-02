@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:poc_demo_app/models/links.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:poc_demo_app/services/API/api.dart';
 
@@ -43,18 +46,58 @@ class HomeScreenProvider with ChangeNotifier {
   ];
 
   bool tasksLodedeFromApi = false;
+  bool retryButtonNeed = false;
 
-  Future<List<Task>> getTasks(int pageNo) async {
-    List<Task>? listOfTaskToAdd = await ApiService().getTodos();
+  int currentPageNoOfTodos = 1;
 
-    if (listOfTaskToAdd != null) {
-      taskList = listOfTaskToAdd;
-      tasksLodedeFromApi = true;
-      notifyListeners();
-      return taskList;
+  Future<bool> getTasks() async {
+    // print('object');
+    // Check is Data is Loaded From API or Not
+    if (tasksLodedeFromApi == false) {
+      // if Data is not Loaded From API Then Load Data Form Api
+      ApiService apiService = ApiService();
+
+      List<Task>? tasksListFromApi = await apiService.getTodos(); // Todo = Task
+
+      if (tasksListFromApi != null) {
+        taskList = tasksListFromApi;
+        tasksLodedeFromApi = true;
+        currentPageNoOfTodos = 1;
+        notifyListeners();
+        return true;
+      } else {
+        retryButtonNeed = true;
+        notifyListeners();
+        return false;
+      }
     } else {
-      return taskList;
+      // if Data is Allready Loaded From Api
+      return true;
     }
+  }
+
+  // lazyLoadingLoadTodos Function add new Task for Next Pages To taskList
+  void lazyLoadingLoadTodos() async {
+    ApiService apiService = ApiService();
+    Map? newPageDataAndTodos =
+        await apiService.getTodosOfNextPage(currentPageNoOfTodos + 1);
+
+    // this Check is Api Respose is not null if it do Nothing (if no more pages then do nothing)
+    if (newPageDataAndTodos != null) {
+      // this will split List of Task And Links Form Api Response (Json to Models)
+      List<Task> nextPageTodoList = newPageDataAndTodos['tasks'];
+      Links nextPageLinksData = newPageDataAndTodos['links'];
+
+      // Combine old Task list with NextPage TaskList
+      List<Task> newTaskList = [...taskList, ...nextPageTodoList];
+
+      // setting oldTask to newTaskList
+      taskList = newTaskList;
+      // addign current page count;
+      currentPageNoOfTodos = currentPageNoOfTodos + 1;
+      // notifying to Listeners
+      notifyListeners();
+    } else {}
   }
 
   void addTask(Task taskToAdd) async {
