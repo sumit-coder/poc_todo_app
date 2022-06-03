@@ -32,7 +32,33 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Roboto-Medium',
           // useMaterial3: true,
         ),
-        home: HomeScreen(),
+        home: AddTodoScreen(),
+        // home: Scaffold(
+        //   body: GestureDetector(
+        //     onPanUpdate: (details) {
+        //       // Swiping in right direction.
+        //       if (details.delta.dx > 0) {
+        //         print('object');
+        //       }
+
+        //       // Swiping in left direction.
+        //       if (details.delta.dx < 0) {
+        //         print('left');
+        //       }
+        //     },
+        //     child: ListView.builder(
+        //       itemCount: 5,
+        //       itemBuilder: (context, index) {
+        //         // final item = items[index];
+        //         return Container(
+        //           height: 100,
+        //           margin: EdgeInsets.all(20),
+        //           color: Colors.red,
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
       ),
     );
   }

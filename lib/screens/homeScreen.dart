@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:poc_demo_app/providers/home_Screen_Provider.dart';
 import 'package:poc_demo_app/services/API/api.dart';
@@ -36,8 +37,7 @@ class HomeScreen extends StatelessWidget {
               Consumer<HomeScreenProvider>(
                 builder: (context, provider, child) {
                   // this Will Called only one Time for getting Todos Form API
-                  if (provider.tasksLodedeFromApi == false &&
-                      provider.retryButtonNeed == false) {
+                  if (provider.tasksLodedeFromApi == false && provider.retryButtonNeed == false) {
                     provider.getTasks();
                   }
                   if (provider.tasksLodedeFromApi == false) {
@@ -55,8 +55,7 @@ class HomeScreen extends StatelessWidget {
                                 // after re-calling getTask show SnackBar (NoInternet)
                                 (value) {
                                   if (value == false) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(noInternetSnackBar);
+                                    ScaffoldMessenger.of(context).showSnackBar(noInternetSnackBar);
                                   }
                                 },
                               );
@@ -84,40 +83,49 @@ class HomeScreen extends StatelessWidget {
                             } else {
                               // print('At bottom');
                               // This Will New Todo When user Scroll to end
-                              Provider.of<HomeScreenProvider>(context,
-                                      listen: false)
+                              Provider.of<HomeScreenProvider>(context, listen: false)
                                   .lazyLoadingLoadTodos();
                             }
                           }
                           return true;
                         },
-                        child: ListView.builder(
-                          itemCount: provider.taskList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            // Get Current from List of Task
-                            Task currentTask = provider.taskList[index];
+                        child: SlidableAutoCloseBehavior(
+                          closeWhenOpened: true,
+                          closeWhenTapped: true,
+                          child: ListView.builder(
+                            itemCount: provider.taskList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              // Get Current from List of Task
+                              Task currentTask = provider.taskList[index];
 
-                            return TodoCard(
-                              onCeckboxClicked: () {
-                                provider.isCompletedTodo(currentTask.id);
-                              },
-                              onTodoDelete: () {
-                                provider.deleteTask(currentTask.id);
-                              },
-                              onTodoLongPress: () {
-                                print('Edit ToDo');
-                              },
-                              todoData: Task(
-                                id: currentTask.id,
-                                task: currentTask.task,
-                                isCompleted: currentTask.isCompleted,
-                                dueDate: currentTask.dueDate,
-                                userId: currentTask.userId,
-                                createdAt: currentTask.createdAt,
-                                updatedAt: currentTask.updatedAt,
-                              ),
-                            );
-                          },
+                              return TodoCard(
+                                onCeckboxClicked: () {
+                                  provider.isCompletedTodo(currentTask.id);
+                                },
+                                onTodoDelete: () {
+                                  provider.deleteTask(currentTask.id);
+                                },
+                                onTodoEdit: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddTodoScreen(),
+                                    ),
+                                  );
+                                  print('Edit ToDo');
+                                },
+                                todoData: Task(
+                                  id: currentTask.id,
+                                  task: currentTask.task,
+                                  isCompleted: currentTask.isCompleted,
+                                  dueDate: currentTask.dueDate,
+                                  userId: currentTask.userId,
+                                  createdAt: currentTask.createdAt,
+                                  updatedAt: currentTask.updatedAt,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );
@@ -136,6 +144,18 @@ class HomeScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (context) => AddTodoScreen()),
                     );
+                    // Provider.of<HomeScreenProvider>(context, listen: false).updateTask(
+                    //   44,
+                    //   Task(
+                    //     id: 58,
+                    //     task: 'Make New App',
+                    //     isCompleted: true,
+                    //     dueDate: DateTime.now().add(const Duration(days: 5)),
+                    //     userId: 5,
+                    //     createdAt: DateTime.now(),
+                    //     updatedAt: DateTime.now(),
+                    //   ),
+                    // );
                   },
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(1),

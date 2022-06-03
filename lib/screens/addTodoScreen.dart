@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/task.dart';
 import '../providers/addTodo_Screen_Provider.dart';
 import '../providers/home_Screen_Provider.dart';
+import '../services/microFunctions/timeAndDate.dart';
 
 class AddTodoScreen extends StatelessWidget {
   AddTodoScreen({Key? key}) : super(key: key);
@@ -33,67 +35,137 @@ class AddTodoScreen extends StatelessWidget {
                             ),
                             child: TextField(
                               onChanged: (value) {
-                                Provider.of<AddTodoScreenProvider>(context,
-                                        listen: false)
+                                Provider.of<AddTodoScreenProvider>(context, listen: false)
                                     .setTodoText(value);
                               },
+                              style: const TextStyle(fontSize: 20, color: Colors.black),
                               decoration: const InputDecoration(
+                                // fillColor: Colors.blue,
+                                // filled: true,
+                                contentPadding: EdgeInsets.all(20.0),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                                ),
                                 border: OutlineInputBorder(),
                               ),
                             ),
                           ),
                         ),
-                        // Due Date Selection
-                        AddTodoFormCellContainer(
-                          headTitle: 'Due Date',
-                          bodyWidget: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                width: 2,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            height: 50,
-                            width: 200,
-                            child: Material(
-                              // color: Colors.blue,
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(5),
-                                onTap: () async {
-                                  showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime.now()
-                                        .add(const Duration(days: 365)),
-                                  ).then((selectedData) {
-                                    print(selectedData);
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        'Today',
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.black),
+                        // Due Date and Time Selection
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AddTodoFormCellContainer(
+                                headTitle: 'Due Date',
+                                bodyWidget: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Colors.blue,
+                                    ),
+                                    color: provider.dueDatebackgroundColor,
+                                  ),
+                                  height: 50,
+                                  // width: 200,
+                                  child: Material(
+                                    color: provider.dueDatebackgroundColor,
+                                    borderRadius: BorderRadius.circular(5),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(5),
+                                      onTap: () async {
+                                        showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                                        ).then((selectedDate) {
+                                          provider.setDueDate(selectedDate);
+                                          print(selectedDate);
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              provider.dueDateText,
+                                              style: TextStyle(
+                                                  fontSize: 18, color: provider.dueDatetextColor),
+                                            ),
+                                            Icon(
+                                              size: 26,
+                                              Icons.date_range_rounded,
+                                              color: provider.dueDatetextColor,
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                      const Icon(
-                                        Icons.date_range_rounded,
-                                        color: Colors.black,
-                                      )
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: AddTodoFormCellContainer(
+                                headTitle: 'Due Time',
+                                bodyWidget: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Colors.blue,
+                                    ),
+                                    color: provider.dueTimebackgroundColor,
+                                  ),
+                                  height: 50,
+                                  // width: 200,
+                                  child: Material(
+                                    color: provider.dueTimebackgroundColor,
+                                    borderRadius: BorderRadius.circular(5),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(5),
+                                      onTap: () async {
+                                        showTimePicker(
+                                          context: context,
+                                          initialTime: const TimeOfDay(
+                                            hour: 7,
+                                            minute: 15,
+                                          ),
+                                        ).then(
+                                          (value) {
+                                            if (value != null) {
+                                              provider.setDueTime(value);
+                                            }
+                                          },
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              provider.dueTimeText,
+                                              style: TextStyle(
+                                                  fontSize: 18, color: provider.dueTimetextColor),
+                                            ),
+                                            Icon(
+                                              Icons.history_toggle_off_rounded,
+                                              size: 30,
+                                              color: provider.dueTimetextColor,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         // Add Todo Status
                         AddTodoFormCellContainer(
@@ -102,9 +174,7 @@ class AddTodoScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               // Select Color based on is Complete is Selected
-                              color: provider.isCompleted != null
-                                  ? Colors.blue
-                                  : Colors.white,
+                              color: provider.isCompleted != null ? Colors.blue : Colors.white,
                               border: Border.all(width: 2, color: Colors.blue),
                               borderRadius: BorderRadius.circular(5),
                             ),
@@ -113,9 +183,8 @@ class AddTodoScreen extends StatelessWidget {
                                 // Set Selected Value to Active
                                 provider.setIsCompleted(value);
                               },
-                              iconEnabledColor: provider.isCompleted != null
-                                  ? Colors.white
-                                  : Colors.black,
+                              iconEnabledColor:
+                                  provider.isCompleted != null ? Colors.white : Colors.black,
                               dropdownColor: Colors.blue,
                               elevation: 2,
                               underline: const SizedBox(),
@@ -164,6 +233,20 @@ class AddTodoScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         // print(d!['tasks'][0].);
+
+                        HomeScreenProvider hom =
+                            Provider.of<HomeScreenProvider>(context, listen: false);
+                        hom.addTask(
+                          Task(
+                            id: 58,
+                            task: 'Learn how to make pc',
+                            isCompleted: false,
+                            dueDate: DateTime.now().add(const Duration(days: 2)),
+                            userId: 5,
+                            createdAt: DateTime.now(),
+                            updatedAt: DateTime.now(),
+                          ),
+                        );
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all(1),
@@ -185,11 +268,12 @@ class AddTodoScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         // print(d!['tasks'][0].);
+                        // Navigator.pop(context);
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all(1),
-                        backgroundColor: MaterialStateProperty.all(
-                            const Color.fromARGB(255, 155, 155, 155)),
+                        backgroundColor:
+                            MaterialStateProperty.all(const Color.fromARGB(255, 155, 155, 155)),
                       ),
                       child: const Text(
                         "Close",

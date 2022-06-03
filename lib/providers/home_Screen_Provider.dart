@@ -79,8 +79,7 @@ class HomeScreenProvider with ChangeNotifier {
   // lazyLoadingLoadTodos Function add new Task for Next Pages To taskList
   void lazyLoadingLoadTodos() async {
     ApiService apiService = ApiService();
-    Map? newPageDataAndTodos =
-        await apiService.getTodosOfNextPage(currentPageNoOfTodos + 1);
+    Map? newPageDataAndTodos = await apiService.getTodosOfNextPage(currentPageNoOfTodos + 1);
 
     // this Check is Api Respose is not null if it do Nothing (if no more pages then do nothing)
     if (newPageDataAndTodos != null) {
@@ -101,7 +100,7 @@ class HomeScreenProvider with ChangeNotifier {
   }
 
   void addTask(Task taskToAdd) async {
-    taskList.add(taskToAdd);
+    taskList.insert(0, taskToAdd);
 
     notifyListeners();
 
@@ -120,6 +119,15 @@ class HomeScreenProvider with ChangeNotifier {
             : taskList[i].isCompleted = true;
 
         break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void updateTask(int taskId, Task newTaskData) {
+    for (var i = 0; i < taskList.length; i++) {
+      if (taskList[i].id == taskId) {
+        taskList[i] = newTaskData;
       }
     }
     notifyListeners();
