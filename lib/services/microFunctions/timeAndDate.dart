@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TimeAndDate {
+  DateTime addTimeOfDayWithDateTime({required DateTime? newDate, required TimeOfDay? newTime}) {
+    DateTime newDateAndTime =
+        DateTime(newDate!.year, newDate.month, newDate.day, newTime!.hour, newTime.minute);
+
+    return newDateAndTime;
+  }
+
   String timeOfDayToNormalString(TimeOfDay convertTime) {
     String timeToString;
     print(convertTime);

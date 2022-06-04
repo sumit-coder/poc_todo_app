@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Roboto-Medium',
           // useMaterial3: true,
         ),
-        home: AddTodoScreen(),
+        home: const HomeScreen(),
         // home: Scaffold(
         //   body: GestureDetector(
         //     onPanUpdate: (details) {

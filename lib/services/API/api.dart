@@ -118,4 +118,27 @@ class ApiService {
       return false;
     }
   }
+
+  Future<bool> updateTodo({required int id, required Task newTask}) async {
+    Uri url = Uri.parse('${baseUrl}/todos/${id}');
+    try {
+      http.Response response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(newTask),
+      );
+
+      // print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

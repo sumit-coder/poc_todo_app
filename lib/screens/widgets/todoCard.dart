@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:provider/provider.dart';
+
+import '../../services/microFunctions/todoDueDatePriorityTag.dart';
 
 class TodoCard extends StatelessWidget {
   const TodoCard({
@@ -35,7 +39,8 @@ class TodoCard extends StatelessWidget {
         elevation: 2,
         child: Builder(builder: (context) {
           return Slidable(
-            key: Key(todoData.id.toString()),
+            // key: KeyData(todoData.id.toString()),
+            key: ValueKey(todoData.id),
             endActionPane: ActionPane(
               dismissible: DismissiblePane(
                 onDismissed: () {
@@ -46,25 +51,20 @@ class TodoCard extends StatelessWidget {
               motion: const DrawerMotion(),
               extentRatio: 0.5,
               children: [
-                Expanded(
-                  child: Material(
-                    // elevation: 2,
-                    color: Color.fromARGB(255, 134, 236, 49),
-                    child: InkWell(
-                      onTap: () {
-                        onTodoEdit();
-                        // Slidable.of(context)!.close();
-                      },
-                      child: Container(
-                        width: 50,
-                        height: double.maxFinite,
-                        child: const Center(
-                          child: Icon(
-                            Icons.edit_rounded,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                        ),
+                CustomSlidableAction(
+                  padding: EdgeInsets.all(0),
+                  onPressed: (context) {
+                    onTodoEdit();
+                  },
+                  child: Container(
+                    color: Color.fromARGB(255, 85, 178, 255),
+                    // width: 50,
+                    height: double.maxFinite,
+                    child: const Center(
+                      child: Icon(
+                        Icons.edit_rounded,
+                        color: Colors.white,
+                        size: 35,
                       ),
                     ),
                   ),
@@ -149,7 +149,8 @@ class TodoCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        getTodoDueDatePriorityContainer(), // this give Low Hige Small card
+                        getTodoDueDatePriorityContainer(
+                            todoData.dueDate), // this give Low Hige Small card
                       ],
                     ),
                   ),
@@ -160,54 +161,5 @@ class TodoCard extends StatelessWidget {
         }),
       ),
     );
-  }
-
-  Widget getTodoDueDatePriorityContainer() {
-    DateTime cardDuteDate = todoData.dueDate;
-
-    DateTime dateAfterTwoDays = DateTime.now().add(const Duration(days: 1));
-
-    // this check if current todos duedate is less then 2 Days
-    if (cardDuteDate.year <= dateAfterTwoDays.year &&
-        cardDuteDate.month <= dateAfterTwoDays.month &&
-        cardDuteDate.day <= dateAfterTwoDays.day) {
-      return Positioned(
-        bottom: 15,
-        right: 15,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            color: const Color.fromARGB(255, 255, 230, 228),
-          ),
-          child: const Text(
-            'High',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color.fromARGB(255, 255, 140, 132),
-            ),
-          ),
-        ),
-      ); // this is High Priority Box
-    } else {
-      return Positioned(
-        bottom: 15,
-        right: 15,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            color: const Color.fromARGB(255, 192, 255, 210),
-          ),
-          child: const Text(
-            'Low',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color.fromARGB(255, 60, 221, 66),
-            ),
-          ),
-        ),
-      ); // this is Low Priority Box
-    }
   }
 }

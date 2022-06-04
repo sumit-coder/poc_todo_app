@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,10 +11,32 @@ import '../providers/home_Screen_Provider.dart';
 import '../services/microFunctions/timeAndDate.dart';
 
 class AddTodoScreen extends StatelessWidget {
-  AddTodoScreen({Key? key}) : super(key: key);
+  AddTodoScreen({Key? key, required this.updateORAdd, this.currentUpdateTask}) : super(key: key);
+
+  final String updateORAdd; // use Update for Updating Task 'Update';
+  Task? currentUpdateTask;
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (updateORAdd == 'Update' && currentUpdateTask != null) {
+        AddTodoScreenProvider addTodoProvider =
+            Provider.of<AddTodoScreenProvider>(context, listen: false);
+
+        TimeOfDay timeOfDayFromDueDate = TimeOfDay.fromDateTime(currentUpdateTask!.dueDate);
+        String timeInString = TimeAndDate().timeOfDayToNormalString(timeOfDayFromDueDate);
+
+        // print(timeInString);
+        // print(currentUpdateTask!.dueDate);
+
+        addTodoProvider.setDueDate(currentUpdateTask!.dueDate);
+        addTodoProvider.setIsCompleted(currentUpdateTask!.isCompleted);
+        addTodoProvider.updateTodoText(currentUpdateTask!.task);
+        addTodoProvider.setDueTime(timeOfDayFromDueDate);
+        // print(currentUpdateTask!.task);
+      }
+    });
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -34,6 +58,7 @@ class AddTodoScreen extends StatelessWidget {
                               color: Colors.white,
                             ),
                             child: TextField(
+                              controller: provider.todoTitleTextController,
                               onChanged: (value) {
                                 Provider.of<AddTodoScreenProvider>(context, listen: false)
                                     .setTodoText(value);
@@ -131,8 +156,8 @@ class AddTodoScreen extends StatelessWidget {
                                         showTimePicker(
                                           context: context,
                                           initialTime: const TimeOfDay(
-                                            hour: 7,
-                                            minute: 15,
+                                            hour: 12,
+                                            minute: 00,
                                           ),
                                         ).then(
                                           (value) {
@@ -233,20 +258,66 @@ class AddTodoScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         // print(d!['tasks'][0].);
+                        // Check if any this not Null then add Todo
+                        if (provider.isCompleted != null &&
+                            provider.todoTitle != '' &&
+                            provider.dueDate != null &&
+                            provider.dueTime != null) {
+                          HomeScreenProvider homeScreenProvider =
+                              Provider.of<HomeScreenProvider>(context, listen: false);
+                          // Get Random ID
+                          Random random = new Random();
+                          int randomID =
+                              (random.nextInt(100000) + 10) * homeScreenProvider.taskList.length;
 
-                        HomeScreenProvider hom =
-                            Provider.of<HomeScreenProvider>(context, listen: false);
-                        hom.addTask(
-                          Task(
-                            id: 58,
-                            task: 'Learn how to make pc',
-                            isCompleted: false,
-                            dueDate: DateTime.now().add(const Duration(days: 2)),
-                            userId: 5,
-                            createdAt: DateTime.now(),
-                            updatedAt: DateTime.now(),
-                          ),
-                        );
+                          //
+                          DateTime dateWithTime = TimeAndDate().addTimeOfDayWithDateTime(
+                              newDate: provider.dueDate, newTime: provider.dueTime);
+
+                          if (updateORAdd != 'Update') {
+                            // print(dateWithTime);
+
+                            //add Task TO API and STATE
+                            homeScreenProvider.addTask(
+                              Task(
+                                id: randomID,
+                                task: provider.todoTitle,
+                                isCompleted: provider.isCompleted ??
+                                    false, //provider.isCompleted is then use {false}
+                                dueDate: dateWithTime,
+                                userId: 5,
+                                createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
+                              ),
+                            );
+                          } else {
+                            // This Will Call When User Update
+                            print('Update');
+
+                            if (currentUpdateTask != null) {
+                              homeScreenProvider.updateTask(
+                                currentUpdateTask!.id,
+                                Task(
+                                  id: currentUpdateTask!.id,
+                                  task: provider.todoTitle,
+                                  isCompleted: provider.isCompleted ?? false,
+                                  dueDate: dateWithTime,
+                                  userId: currentUpdateTask!.userId,
+                                  createdAt: currentUpdateTask!.createdAt,
+                                  updatedAt: DateTime.now(),
+                                ),
+                              );
+                            }
+                          }
+
+                          // Send Back TO Home Page
+                          Navigator.pop(context);
+
+                          // This Function will Empty all Fields form Add Todo Data
+                          provider.emptyAllFields();
+                        } else {
+                          print('Fill all Fields');
+                        }
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all(1),
@@ -268,7 +339,8 @@ class AddTodoScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         // print(d!['tasks'][0].);
-                        // Navigator.pop(context);
+                        provider.emptyAllFields();
+                        Navigator.pop(context);
                       },
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all(1),

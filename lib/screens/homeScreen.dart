@@ -100,19 +100,22 @@ class HomeScreen extends StatelessWidget {
 
                               return TodoCard(
                                 onCeckboxClicked: () {
-                                  provider.isCompletedTodo(currentTask.id);
+                                  provider.isCompletedTodo(currentTask.id, currentTask);
                                 },
                                 onTodoDelete: () {
                                   provider.deleteTask(currentTask.id);
                                 },
                                 onTodoEdit: () {
+                                  //
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddTodoScreen(),
+                                      builder: (context) => AddTodoScreen(
+                                        updateORAdd: 'Update',
+                                        currentUpdateTask: currentTask,
+                                      ),
                                     ),
                                   );
-                                  print('Edit ToDo');
                                 },
                                 todoData: Task(
                                   id: currentTask.id,
@@ -142,8 +145,13 @@ class HomeScreen extends StatelessWidget {
                     // print(d!['tasks'][0].);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddTodoScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => AddTodoScreen(
+                          updateORAdd: 'Add',
+                        ),
+                      ),
                     );
+
                     // Provider.of<HomeScreenProvider>(context, listen: false).updateTask(
                     //   44,
                     //   Task(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poc_demo_app/models/task.dart';
 
 import '../services/microFunctions/timeAndDate.dart';
 
@@ -6,6 +7,7 @@ class AddTodoScreenProvider with ChangeNotifier {
   DateTime? dueDate;
   TimeOfDay? dueTime;
   String todoTitle = '';
+  TextEditingController? todoTitleTextController = TextEditingController();
   bool? isCompleted;
 
   // { | Due Date | Section UI Variable }
@@ -23,6 +25,14 @@ class AddTodoScreenProvider with ChangeNotifier {
   setTodoText(String newValue) {
     todoTitle = newValue;
 
+    notifyListeners();
+  }
+
+  updateTodoText(String oldTodoText) {
+    if (todoTitleTextController != null) {
+      todoTitleTextController!.text = oldTodoText;
+      todoTitle = oldTodoText;
+    }
     notifyListeners();
   }
 
@@ -56,5 +66,22 @@ class AddTodoScreenProvider with ChangeNotifier {
     isCompleted = newValue;
 
     notifyListeners();
+  }
+
+  emptyAllFields() {
+    dueDate = null;
+    dueTime = null;
+    todoTitle = '';
+    isCompleted = null;
+    todoTitleTextController?.text = '';
+
+    // { | Due Date  | Section UI Variable }
+    dueDatetextColor = Colors.black;
+    dueDatebackgroundColor = Colors.white;
+    dueDateText = 'Today';
+    // { | Due Time | Section UI Variable }
+    dueTimetextColor = Colors.black;
+    dueTimebackgroundColor = Colors.white;
+    dueTimeText = '12:00 AM';
   }
 }

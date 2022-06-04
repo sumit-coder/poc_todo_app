@@ -6,39 +6,14 @@ import 'package:poc_demo_app/models/task.dart';
 import 'package:poc_demo_app/services/API/api.dart';
 
 class HomeScreenProvider with ChangeNotifier {
+  ApiService apiService = ApiService();
+
   List<Task> taskList = [
     Task(
       id: 55,
       task: 'Make a Game',
       isCompleted: false,
       dueDate: DateTime.now().add(const Duration(days: 2)),
-      userId: 5,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Task(
-      id: 56,
-      task: 'Watch Youtube Video',
-      isCompleted: true,
-      dueDate: DateTime.now().add(const Duration(days: 1)),
-      userId: 5,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Task(
-      id: 57,
-      task: 'Make New App',
-      isCompleted: true,
-      dueDate: DateTime.now().add(const Duration(days: 1)),
-      userId: 5,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Task(
-      id: 58,
-      task: 'Make New App',
-      isCompleted: true,
-      dueDate: DateTime.now().add(const Duration(days: 5)),
       userId: 5,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -102,21 +77,26 @@ class HomeScreenProvider with ChangeNotifier {
   void addTask(Task taskToAdd) async {
     taskList.insert(0, taskToAdd);
 
-    notifyListeners();
+    // Add Task to API
+    apiService.addTodo(taskToAdd);
 
-    // add todo to Database
-    // if (await ApiService().addTodo(taskToAdd)) {
-    //   print('added to DB');
-    // }
+    notifyListeners();
   }
 
-  void isCompletedTodo(int taskId) {
+  void isCompletedTodo(int taskId, Task oldTaskData) {
     for (var i = 0; i < taskList.length; i++) {
       if (taskList[i].id == taskId) {
         // Seting task isCompleted to true or false
-        taskList[i].isCompleted == true
-            ? taskList[i].isCompleted = false
-            : taskList[i].isCompleted = true;
+        bool newValueForisCompleted = taskList[i].isCompleted == true ? false : true;
+
+        // Update isCompleted State
+        taskList[i].isCompleted = newValueForisCompleted;
+
+        // Update isCompleted to API
+        Task newTaskData = oldTaskData;
+        newTaskData.isCompleted = newValueForisCompleted;
+
+        apiService.updateTodo(id: taskId, newTask: newTaskData);
 
         break;
       }
@@ -128,8 +108,15 @@ class HomeScreenProvider with ChangeNotifier {
     for (var i = 0; i < taskList.length; i++) {
       if (taskList[i].id == taskId) {
         taskList[i] = newTaskData;
+
+        //  Update Todo On API
+        apiService.updateTodo(
+          id: taskId,
+          newTask: newTaskData,
+        );
       }
     }
+
     notifyListeners();
   }
 
@@ -137,6 +124,9 @@ class HomeScreenProvider with ChangeNotifier {
     for (var i = 0; i < taskList.length; i++) {
       if (taskList[i].id == taskId) {
         taskList.removeAt(i);
+
+        //  Delete Todo On API
+        apiService.deleteTodo(taskId);
 
         break;
       }
