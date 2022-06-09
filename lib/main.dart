@@ -30,35 +30,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           fontFamily: 'Roboto-Medium',
-          // useMaterial3: true,
+          useMaterial3: true,
         ),
         home: const HomeScreen(),
-        // home: Scaffold(
-        //   body: GestureDetector(
-        //     onPanUpdate: (details) {
-        //       // Swiping in right direction.
-        //       if (details.delta.dx > 0) {
-        //         print('object');
-        //       }
-
-        //       // Swiping in left direction.
-        //       if (details.delta.dx < 0) {
-        //         print('left');
-        //       }
-        //     },
-        //     child: ListView.builder(
-        //       itemCount: 5,
-        //       itemBuilder: (context, index) {
-        //         // final item = items[index];
-        //         return Container(
-        //           height: 100,
-        //           margin: EdgeInsets.all(20),
-        //           color: Colors.red,
-        //         );
-        //       },
-        //     ),
-        //   ),
-        // ),
       ),
     );
   }

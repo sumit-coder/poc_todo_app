@@ -5,7 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/microFunctions/todoDueDatePriorityTag.dart';
+import 'todoDueDatePriorityTag.dart';
 
 class TodoCard extends StatelessWidget {
   const TodoCard({
@@ -25,17 +25,21 @@ class TodoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String getRightDateFormate() {
       String currentdate =
-          "${todoData.dueDate.year}/${todoData.dueDate.month}/${todoData.dueDate.day}";
+          "${todoData.dueDate.hour}:${todoData.dueDate.minute} - ${todoData.dueDate.year}/${todoData.dueDate.month}/${todoData.dueDate.day} ";
 
       return currentdate;
     }
 
     return Container(
-      height: 100,
+      height: 105,
       margin: const EdgeInsets.only(top: 10, bottom: 5, left: 5, right: 5),
-      child: Material(
-        color: todoData.isCompleted == true ? Color.fromARGB(255, 228, 234, 255) : Colors.white,
-        borderRadius: BorderRadius.circular(10),
+      child: Card(
+        margin: EdgeInsets.all(0),
+        color: todoData.isCompleted == true
+            ? Color.fromARGB(255, 228, 234, 255)
+            : Color.fromARGB(255, 255, 255, 255),
+        // borderRadius: BorderRadius.circular(10),
+
         elevation: 2,
         child: Builder(builder: (context) {
           return Slidable(

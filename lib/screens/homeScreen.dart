@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/links.dart';
 import 'addTodoScreen.dart';
+import 'widgets/addToDoDialog.dart';
 import 'widgets/snackBars.dart';
 import 'widgets/todoCard.dart';
 
@@ -107,15 +108,16 @@ class HomeScreen extends StatelessWidget {
                                 },
                                 onTodoEdit: () {
                                   //
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddTodoScreen(
-                                        updateORAdd: 'Update',
-                                        currentUpdateTask: currentTask,
-                                      ),
-                                    ),
-                                  );
+                                  getUpdateTodoDialog(context, currentTask);
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => AddTodoScreen(
+                                  //       updateORAdd: 'Update',
+                                  //       currentUpdateTask: currentTask,
+                                  //     ),
+                                  //   ),
+                                  // );
                                 },
                                 todoData: Task(
                                   id: currentTask.id,
@@ -143,30 +145,19 @@ class HomeScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     // print(d!['tasks'][0].);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddTodoScreen(
-                          updateORAdd: 'Add',
-                        ),
-                      ),
-                    );
-
-                    // Provider.of<HomeScreenProvider>(context, listen: false).updateTask(
-                    //   44,
-                    //   Task(
-                    //     id: 58,
-                    //     task: 'Make New App',
-                    //     isCompleted: true,
-                    //     dueDate: DateTime.now().add(const Duration(days: 5)),
-                    //     userId: 5,
-                    //     createdAt: DateTime.now(),
-                    //     updatedAt: DateTime.now(),
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => AddTodoScreen(
+                    //       updateORAdd: 'Add',
+                    //     ),
                     //   ),
                     // );
+                    getAddTodoDialog(context);
                   },
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(1),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 3,
+                    primary: Colors.blue,
                   ),
                   child: const Text(
                     "Add Todo",

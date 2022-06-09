@@ -8,7 +8,7 @@ import 'package:poc_demo_app/models/task.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  late String baseUrl = 'https://dktodoapi.herokuapp.com/api';
+  late String baseUrl = 'https://nodetodoserver.herokuapp.com/api/';
 
   //{DELETE} /todos/2
   //{GET} /todos

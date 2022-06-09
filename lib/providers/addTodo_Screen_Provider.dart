@@ -8,7 +8,7 @@ class AddTodoScreenProvider with ChangeNotifier {
   TimeOfDay? dueTime;
   String todoTitle = '';
   TextEditingController? todoTitleTextController = TextEditingController();
-  bool? isCompleted;
+  bool isCompleted = false;
 
   // { | Due Date | Section UI Variable }
 
@@ -62,7 +62,7 @@ class AddTodoScreenProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  setIsCompleted(bool? newValue) {
+  setIsCompleted(bool newValue) {
     isCompleted = newValue;
 
     notifyListeners();
@@ -72,7 +72,6 @@ class AddTodoScreenProvider with ChangeNotifier {
     dueDate = null;
     dueTime = null;
     todoTitle = '';
-    isCompleted = null;
     todoTitleTextController?.text = '';
 
     // { | Due Date  | Section UI Variable }
