@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-import 'package:poc_demo_app/models/links.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:poc_demo_app/services/API/api.dart';
 
@@ -49,29 +46,6 @@ class HomeScreenProvider with ChangeNotifier {
       // if Data is Allready Loaded From Api
       return true;
     }
-  }
-
-  // lazyLoadingLoadTodos Function add new Task for Next Pages To taskList
-  void lazyLoadingLoadTodos() async {
-    ApiService apiService = ApiService();
-    Map? newPageDataAndTodos = await apiService.getTodosOfNextPage(currentPageNoOfTodos + 1);
-
-    // this Check is Api Respose is not null if it do Nothing (if no more pages then do nothing)
-    if (newPageDataAndTodos != null) {
-      // this will split List of Task And Links Form Api Response (Json to Models)
-      List<Task> nextPageTodoList = newPageDataAndTodos['tasks'];
-      Links nextPageLinksData = newPageDataAndTodos['links'];
-
-      // Combine old Task list with NextPage TaskList
-      List<Task> newTaskList = [...taskList, ...nextPageTodoList];
-
-      // setting oldTask to newTaskList
-      taskList = newTaskList;
-      // addign current page count;
-      currentPageNoOfTodos = currentPageNoOfTodos + 1;
-      // notifying to Listeners
-      notifyListeners();
-    } else {}
   }
 
   void addTask(Task taskToAdd) async {

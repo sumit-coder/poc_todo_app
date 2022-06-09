@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:poc_demo_app/providers/home_Screen_Provider.dart';
-import 'package:poc_demo_app/services/API/api.dart';
 import 'package:provider/provider.dart';
 
-import '../models/links.dart';
-import 'addTodoScreen.dart';
 import 'widgets/addToDoDialog.dart';
 import 'widgets/snackBars.dart';
 import 'widgets/todoCard.dart';
@@ -76,61 +73,46 @@ class HomeScreen extends StatelessWidget {
                   } else {
                     // This Will return when data is loaded form API
                     return Expanded(
-                      child: NotificationListener<ScrollEndNotification>(
-                        onNotification: (ScrollNotification notification) {
-                          if (notification.metrics.atEdge) {
-                            if (notification.metrics.pixels == 0) {
-                              // print('At top');
-                            } else {
-                              // print('At bottom');
-                              // This Will New Todo When user Scroll to end
-                              Provider.of<HomeScreenProvider>(context, listen: false)
-                                  .lazyLoadingLoadTodos();
-                            }
-                          }
-                          return true;
-                        },
-                        child: SlidableAutoCloseBehavior(
-                          closeWhenOpened: true,
-                          closeWhenTapped: true,
-                          child: ListView.builder(
-                            itemCount: provider.taskList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              // Get Current from List of Task
-                              Task currentTask = provider.taskList[index];
+                      child: SlidableAutoCloseBehavior(
+                        closeWhenOpened: true,
+                        closeWhenTapped: true,
+                        child: ListView.builder(
+                          itemCount: provider.taskList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            // Get Current from List of Task
+                            Task currentTask = provider.taskList[index];
 
-                              return TodoCard(
-                                onCeckboxClicked: () {
-                                  provider.isCompletedTodo(currentTask.id, currentTask);
-                                },
-                                onTodoDelete: () {
-                                  provider.deleteTask(currentTask.id);
-                                },
-                                onTodoEdit: () {
-                                  //
-                                  getUpdateTodoDialog(context, currentTask);
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => AddTodoScreen(
-                                  //       updateORAdd: 'Update',
-                                  //       currentUpdateTask: currentTask,
-                                  //     ),
-                                  //   ),
-                                  // );
-                                },
-                                todoData: Task(
-                                  id: currentTask.id,
-                                  task: currentTask.task,
-                                  isCompleted: currentTask.isCompleted,
-                                  dueDate: currentTask.dueDate,
-                                  userId: currentTask.userId,
-                                  createdAt: currentTask.createdAt,
-                                  updatedAt: currentTask.updatedAt,
-                                ),
-                              );
-                            },
-                          ),
+                            return TodoCard(
+                              onCeckboxClicked: () {
+                                provider.isCompletedTodo(currentTask.id, currentTask);
+                              },
+                              onTodoDelete: () {
+                                provider.deleteTask(currentTask.id);
+                              },
+                              onTodoEdit: () {
+                                //
+                                getUpdateTodoDialog(context, currentTask);
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => AddTodoScreen(
+                                //       updateORAdd: 'Update',
+                                //       currentUpdateTask: currentTask,
+                                //     ),
+                                //   ),
+                                // );
+                              },
+                              todoData: Task(
+                                id: currentTask.id,
+                                task: currentTask.task,
+                                isCompleted: currentTask.isCompleted,
+                                dueDate: currentTask.dueDate,
+                                userId: currentTask.userId,
+                                createdAt: currentTask.createdAt,
+                                updatedAt: currentTask.updatedAt,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     );

@@ -1,9 +1,7 @@
 // ignore_for_file: unnecessary_brace_in_string_interps
 
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:poc_demo_app/models/links.dart';
 import 'package:poc_demo_app/models/task.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,31 +23,6 @@ class ApiService {
       List<Task> listOfTaskFromAPI = taskFromJson(jsonData);
 
       return listOfTaskFromAPI;
-    } else {
-      return null;
-    }
-  }
-
-  Future<Map?> getTodosOfNextPage(int pageNo) async {
-    if (pageNo >= 2) {
-      // only runs if target page no is 2 More then 2
-      dynamic pageData = await getTodoPageData(pageNo);
-
-      if (pageData != null) {
-        // converting task list and page Link to json
-        var jsonDataLinks = jsonEncode(pageData['links']);
-        var jsonDataTasks = jsonEncode(pageData['data']);
-        // converting json task list and page Links For StateManagement
-        Links pageLinkFromAPI = linksFromJson(jsonDataLinks);
-        List<Task> listOfTaskFromAPI = taskFromJson(jsonDataTasks);
-
-        return {
-          'tasks': listOfTaskFromAPI,
-          'links': pageLinkFromAPI,
-        };
-      } else {
-        return null;
-      }
     } else {
       return null;
     }
