@@ -38,7 +38,10 @@ class ApiService {
     }
     try {
       //
+      print('response.statusCode');
       http.Response response = await http.get(url);
+
+      print(response);
       if (response.statusCode == 200) {
         String data = response.body;
         var decodedData = jsonDecode(data);
